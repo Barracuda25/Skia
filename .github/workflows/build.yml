@@ -1,0 +1,137 @@
+name: Build Skia for PDF creation
+
+on:
+  push:
+    branches: [ "main" ]
+    
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        build_type: [Release]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.x
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'   
+
+    - name: Build Windows
+      if: matrix.os == 'windows-latest'
+      run: |
+          git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "${{ github.workspace }}/depot_tools" >> $GITHUB_PATH
+          export PATH="${PWD}/depot_tools:${PATH}"
+          git clone --depth 1 https://github.com/google/skia.git --branch chrome/m146 
+          cd skia
+          bin/fetch-ninja
+          python tools/git-sync-deps
+          bin/gn gen out/release --args='
+            cc="clang"
+            cxx="clang++"
+            is_official_build=true
+            is_component_build=false
+            skia_enable_tools=true
+            skia_use_system_expat=false
+            skia_use_system_icu=false
+            skia_use_system_harfbuzz=false
+            skia_use_system_libjpeg_turbo=false
+            skia_use_system_libpng=false
+            skia_use_system_libwebp=false
+            skia_use_system_zlib=false
+            skia_use_dng_sdk=false
+            skia_use_harfbuzz=true
+            skia_use_icu=true
+            skia_use_icu4x=false
+            skia_use_fontconfig=false
+            skia_use_gl=false
+            skia_use_libjpeg_turbo_decode=true
+            skia_use_libjpeg_turbo_encode=true
+            skia_use_libpng_encode=true
+            skia_use_libpng_decode=true
+            skia_enable_android_utils=false
+            skia_enable_spirv_validation=false
+            skia_enable_gpu = true
+            skia_enable_gpu_debug_layers=false
+            skia_use_jpeg_gainmaps=false
+            skia_use_libheif=false
+            skia_use_lua=false
+            skia_enable_svg=true
+            skia_use_expat=true
+            skia_enable_skshaper=true
+            skia_enable_skunicode=true
+            skia_pdf_subset_harfbuzz=true
+            skia_enable_pdf=true
+            skia_compile_modules=true
+            skia_use_safe_libcxx=true
+            skia_enable_fontmgr_custom_embedded=true'
+            
+          ninja -C out/release skia svg skparagraph    
+          
+      shell: bash         
+
+    - name: Build Linux
+      if: matrix.os == 'ubuntu-latest'
+      run: |
+          git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
+          echo "${{ github.workspace }}/depot_tools" >> $GITHUB_PATH
+          export PATH="${PWD}/depot_tools:${PATH}"
+          git clone --depth 1 https://github.com/google/skia.git --branch chrome/m146 
+          cd skia
+          bin/fetch-ninja
+          python tools/git-sync-deps
+          bin/gn gen out/release --args='
+            cc="clang"
+            cxx="clang++"
+            is_official_build=true
+            is_component_build=false
+            skia_enable_tools=true
+            skia_use_system_expat=false
+            skia_use_system_icu=false
+            skia_use_system_harfbuzz=false
+            skia_use_system_libjpeg_turbo=false
+            skia_use_system_libpng=false
+            skia_use_system_libwebp=false
+            skia_use_system_zlib=false
+            skia_use_dng_sdk=false
+            skia_use_harfbuzz=true
+            skia_use_icu=true
+            skia_use_icu4x=false
+            skia_use_fontconfig=false
+            skia_use_gl=false
+            skia_use_libjpeg_turbo_decode=true
+            skia_use_libjpeg_turbo_encode=true
+            skia_use_libpng_encode=true
+            skia_use_libpng_decode=true
+            skia_enable_android_utils=false
+            skia_enable_spirv_validation=false
+            skia_enable_gpu = true
+            skia_enable_gpu_debug_layers=false
+            skia_use_jpeg_gainmaps=false
+            skia_use_libheif=false
+            skia_use_lua=false
+            skia_enable_svg=true
+            skia_use_expat=true
+            skia_enable_skshaper=true
+            skia_enable_skunicode=true
+            skia_pdf_subset_harfbuzz=true
+            skia_enable_pdf=true
+            skia_compile_modules=true
+            skia_use_safe_libcxx=true
+            skia_enable_fontmgr_custom_embedded=true'
+          ninja -C out/release skia svg skparagraph
+      shell: bash          
+      
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v3
+      with:
+          name: Build Package
+          path: |
+            skia/out/release/        
