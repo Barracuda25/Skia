@@ -78,6 +78,18 @@ jobs:
             skia_enable_fontmgr_custom_embedded=true'
             
           ninja -C out/release skia svg skparagraph    
+
+          mkdir -p ../dist/include ../dist/lib
+          
+          cp -r ../include/* ../dist/include/ 2>/dev/null || true
+          cp -r ../modules/skparagraph/include/* ../dist/include/ 2>/dev/null || true
+          cp -r ../modules/skshaper/include/* ../dist/include/ 2>/dev/null || true
+          cp -r ../modules/skunicode/include/* ../dist/include/ 2>/dev/null || true
+          
+          cp out/release/skia.lib ../dist/lib/skia.lib
+          
+          cp out/release/*.a ../dist/lib/ 2>/dev/null || true
+          cp out/release/*.lib ../dist/lib/ 2>/dev/null || true          
           
       shell: bash         
 
@@ -136,13 +148,25 @@ jobs:
             skia_compile_modules=true
             skia_use_safe_libcxx=true
             skia_enable_fontmgr_custom_embedded=true'
+          
           ninja -C out/release skia svg skparagraph
+
+          mkdir -p ../dist/include ../dist/lib
+          
+          cp -r ../include/* ../dist/include/ 2>/dev/null || true
+          cp -r ../modules/skparagraph/include/* ../dist/include/ 2>/dev/null || true
+          cp -r ../modules/skshaper/include/* ../dist/include/ 2>/dev/null || true
+          cp -r ../modules/skunicode/include/* ../dist/include/ 2>/dev/null || true
+          
+          cp out/release/libskia.a ../dist/lib/libskia.a
+          
+          cp out/release/*.a ../dist/lib/ 2>/dev/null || true
+          cp out/release/*.lib ../dist/lib/ 2>/dev/null || true             
       shell: bash          
       
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
           name: skia-build-${{ runner.os }}-${{ matrix.build_type }}
-          path: |
-            skia/out/release/        
+          path: skia/dist/ 
           retention-days: 30            
