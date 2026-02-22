@@ -142,6 +142,7 @@ jobs:
     - name: Upload build artifacts
       uses: actions/upload-artifact@v4
       with:
-          name: Build Package
+          name: skia-build-${{ runner.os }}-${{ matrix.build_type }}
           path: |
             skia/out/release/        
+          retention-days: 30            
