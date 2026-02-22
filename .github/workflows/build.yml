@@ -81,16 +81,15 @@ jobs:
 
           mkdir -p dist/include dist/lib
           
-          cp -r ../include/*           dist/include/ 2>/dev/null || true
-          cp -r ../modules/skparagraph/include/* dist/include/ 2>/dev/null || true
-          cp -r ../modules/skshaper/include/*   dist/include/ 2>/dev/null || true
-          cp -r ../modules/skunicode/include/*  dist/include/ 2>/dev/null || true
+          cp -r include/*           dist/include/ 2>/dev/null || true
+          cp -r modules/skparagraph/include/* dist/include/ 2>/dev/null || true
+          cp -r modules/skshaper/include/*   dist/include/ 2>/dev/null || true
+          cp -r modules/skunicode/include/*  dist/include/ 2>/dev/null || true
           
-          # Alle DLLs + Import-Libs
           cp out/release/*.dll dist/lib/ 2>/dev/null || true
           cp out/release/*.lib dist/lib/ 2>/dev/null || true
           cp out/release/*.so  dist/lib/ 2>/dev/null || true
-          cp out/release/*.a   dist/lib/ 2>/dev/null || true 
+          cp out/release/*.a   dist/lib/ 2>/dev/null || true
           
       shell: bash         
 
@@ -154,15 +153,15 @@ jobs:
           
           mkdir -p dist/include dist/lib
           
-          cp -r ../include/*           dist/include/ 2>/dev/null || true
-          cp -r ../modules/skshaper/include/*   dist/include/ 2>/dev/null || true
-          cp -r ../modules/skparagraph/include/* dist/include/ 2>/dev/null || true
-          cp -r ../modules/skunicode/include/*  dist/include/ 2>/dev/null || true
+          cp -r include/*           dist/include/ 2>/dev/null || true
+          cp -r modules/skparagraph/include/* dist/include/ 2>/dev/null || true
+          cp -r modules/skshaper/include/*   dist/include/ 2>/dev/null || true
+          cp -r modules/skunicode/include/*  dist/include/ 2>/dev/null || true
           
           cp out/release/*.dll dist/lib/ 2>/dev/null || true
           cp out/release/*.lib dist/lib/ 2>/dev/null || true
           cp out/release/*.so  dist/lib/ 2>/dev/null || true
-          cp out/release/*.a   dist/lib/ 2>/dev/null || true       
+          cp out/release/*.a   dist/lib/ 2>/dev/null || true    
           
       shell: bash          
       
