@@ -36,7 +36,7 @@ jobs:
           rm -rf out/release
           bin/gn gen out/release --args='
             is_official_build=true
-            is_component_build=false
+            is_component_build=true
             skia_enable_tools=true
             skia_use_system_expat=false
             skia_use_system_icu=false
@@ -68,7 +68,7 @@ jobs:
             skia_use_jpeg_gainmaps=false
             skia_use_libavif=false
             skia_use_lua=false
-            skia_enable_svg=true
+            skia_enable_svg=false
             skia_use_expat=true
             skia_enable_skshaper=true
             skia_enable_skunicode=true
@@ -86,10 +86,10 @@ jobs:
           cp -r ../modules/skshaper/include/* ../dist/include/ 2>/dev/null || true
           cp -r ../modules/skunicode/include/* ../dist/include/ 2>/dev/null || true
           
-          cp out/release/skia.lib ../dist/lib/skia.lib
-          
-          cp out/release/*.a ../dist/lib/ 2>/dev/null || true
-          cp out/release/*.lib ../dist/lib/ 2>/dev/null || true          
+          cp out/release/*.dll ../dist/lib/ 2>/dev/null || true
+          cp out/release/*.lib ../dist/lib/ 2>/dev/null || true
+          cp out/release/*.so  ../dist/lib/ 2>/dev/null || true
+          cp out/release/*.a   ../dist/lib/ 2>/dev/null || true    
           
       shell: bash         
 
@@ -107,7 +107,7 @@ jobs:
             cc="clang"
             cxx="clang++"
             is_official_build=true
-            is_component_build=false
+            is_component_build=true
             skia_enable_tools=true
             skia_use_system_expat=false
             skia_use_system_icu=false
@@ -139,7 +139,7 @@ jobs:
             skia_use_jpeg_gainmaps=false
             skia_use_libheif=false
             skia_use_lua=false
-            skia_enable_svg=true
+            skia_enable_svg=false
             skia_use_expat=true
             skia_enable_skshaper=true
             skia_enable_skunicode=true
@@ -158,10 +158,11 @@ jobs:
           cp -r ../modules/skshaper/include/* ../dist/include/ 2>/dev/null || true
           cp -r ../modules/skunicode/include/* ../dist/include/ 2>/dev/null || true
           
-          cp out/release/libskia.a ../dist/lib/libskia.a
+          cp out/release/*.dll ../dist/lib/ 2>/dev/null || true
+          cp out/release/*.lib ../dist/lib/ 2>/dev/null || true
+          cp out/release/*.so  ../dist/lib/ 2>/dev/null || true
+          cp out/release/*.a   ../dist/lib/ 2>/dev/null || true         
           
-          cp out/release/*.a ../dist/lib/ 2>/dev/null || true
-          cp out/release/*.lib ../dist/lib/ 2>/dev/null || true             
       shell: bash          
       
     - name: Upload build artifacts
