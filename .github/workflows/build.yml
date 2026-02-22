@@ -77,19 +77,20 @@ jobs:
             skia_compile_modules=true
             skia_enable_fontmgr_custom_embedded=true'
             
-          ninja -C out/release skia svg skparagraph    
+          ninja -C out/release skia skparagraph    
 
-          mkdir -p ../dist/include ../dist/lib
+          mkdir -p dist/include dist/lib
           
-          cp -r ../include/* ../dist/include/ 2>/dev/null || true
-          cp -r ../modules/skparagraph/include/* ../dist/include/ 2>/dev/null || true
-          cp -r ../modules/skshaper/include/* ../dist/include/ 2>/dev/null || true
-          cp -r ../modules/skunicode/include/* ../dist/include/ 2>/dev/null || true
+          cp -r ../include/*           dist/include/ 2>/dev/null || true
+          cp -r ../modules/skparagraph/include/* dist/include/ 2>/dev/null || true
+          cp -r ../modules/skshaper/include/*   dist/include/ 2>/dev/null || true
+          cp -r ../modules/skunicode/include/*  dist/include/ 2>/dev/null || true
           
-          cp out/release/*.dll ../dist/lib/ 2>/dev/null || true
-          cp out/release/*.lib ../dist/lib/ 2>/dev/null || true
-          cp out/release/*.so  ../dist/lib/ 2>/dev/null || true
-          cp out/release/*.a   ../dist/lib/ 2>/dev/null || true    
+          # Alle DLLs + Import-Libs
+          cp out/release/*.dll dist/lib/ 2>/dev/null || true
+          cp out/release/*.lib dist/lib/ 2>/dev/null || true
+          cp out/release/*.so  dist/lib/ 2>/dev/null || true
+          cp out/release/*.a   dist/lib/ 2>/dev/null || true 
           
       shell: bash         
 
@@ -137,7 +138,7 @@ jobs:
             skia_enable_skottie=false
             skia_enable_gpu_debug_layers=false
             skia_use_jpeg_gainmaps=false
-            skia_use_libheif=false
+            skia_use_libavif=false
             skia_use_lua=false
             skia_enable_svg=false
             skia_use_expat=true
@@ -149,19 +150,19 @@ jobs:
             skia_use_safe_libcxx=true
             skia_enable_fontmgr_custom_embedded=true'
           
-          ninja -C out/release skia svg skparagraph
-
-          mkdir -p ../dist/include ../dist/lib
+          ninja -C out/release skia skparagraph
           
-          cp -r ../include/* ../dist/include/ 2>/dev/null || true
-          cp -r ../modules/skparagraph/include/* ../dist/include/ 2>/dev/null || true
-          cp -r ../modules/skshaper/include/* ../dist/include/ 2>/dev/null || true
-          cp -r ../modules/skunicode/include/* ../dist/include/ 2>/dev/null || true
+          mkdir -p dist/include dist/lib
           
-          cp out/release/*.dll ../dist/lib/ 2>/dev/null || true
-          cp out/release/*.lib ../dist/lib/ 2>/dev/null || true
-          cp out/release/*.so  ../dist/lib/ 2>/dev/null || true
-          cp out/release/*.a   ../dist/lib/ 2>/dev/null || true         
+          cp -r ../include/*           dist/include/ 2>/dev/null || true
+          cp -r ../modules/skshaper/include/*   dist/include/ 2>/dev/null || true
+          cp -r ../modules/skparagraph/include/* dist/include/ 2>/dev/null || true
+          cp -r ../modules/skunicode/include/*  dist/include/ 2>/dev/null || true
+          
+          cp out/release/*.dll dist/lib/ 2>/dev/null || true
+          cp out/release/*.lib dist/lib/ 2>/dev/null || true
+          cp out/release/*.so  dist/lib/ 2>/dev/null || true
+          cp out/release/*.a   dist/lib/ 2>/dev/null || true       
           
       shell: bash          
       
