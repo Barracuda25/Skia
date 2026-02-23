@@ -23,17 +23,21 @@ jobs:
       with:
         python-version: '3.x'   
 
+    - name: Setup MSVC
+      if: matrix.os == 'windows-latest'
+      uses: ilammy/msvc-dev-cmd@v1
+         
     - name: Build Windows
       if: matrix.os == 'windows-latest'
+      shell: pwsh      
       run: |
           git clone --depth 1 https://chromium.googlesource.com/chromium/tools/depot_tools.git
-          echo "${{ github.workspace }}/depot_tools" >> $GITHUB_PATH
-          export PATH="${PWD}/depot_tools:${PATH}"
+          $env:PATH = "${PWD}/depot_tools;${env:PATH}"
+
           git clone --depth 1 https://github.com/google/skia.git --branch chrome/m146 
           cd skia
           bin/fetch-ninja
           python tools/git-sync-deps
-          rm -rf out/release
           bin/gn gen out/release --args='
             is_official_build=true
             is_component_build=false
@@ -81,20 +85,17 @@ jobs:
             
           ninja -C out/release skia skparagraph skshaper skunicode   
           
-          mkdir -p dist/include dist/lib
-      
-          cp -r include/*                     dist/include/ 2>$null || true
-          cp -r modules/skparagraph/include/* dist/include/ 2>$null || true
-          cp -r modules/skshaper/include/*    dist/include/ 2>$null || true
-          cp -r modules/skunicode/include/*   dist/include/ 2>$null || true
+          New-Item -ItemType Directory -Force -Path dist/include,dist/lib | Out-Null
+
+          Copy-Item -Recurse -Path include/* -Destination dist/include -ErrorAction SilentlyContinue
+          Copy-Item -Recurse -Path modules/skparagraph/include/* -Destination dist/include -ErrorAction SilentlyContinue
+          Copy-Item -Recurse -Path modules/skshaper/include/* -Destination dist/include -ErrorAction SilentlyContinue
+          Copy-Item -Recurse -Path modules/skunicode/include/* -Destination dist/include -ErrorAction SilentlyContinue
           
-          # Eine einzige Library – genau wie du es wolltest
           cd out/release
           lib.exe /OUT:../../dist/lib/skia_barracuda.lib *.lib
           cd ../..
                     
-      shell: bash         
-
     - name: Build Linux
       if: matrix.os == 'ubuntu-latest'
       run: |
@@ -161,18 +162,23 @@ jobs:
           cp -r modules/skparagraph/include/* dist/include/ 2>/dev/null || true
           cp -r modules/skshaper/include/*   dist/include/ 2>/dev/null || true
           cp -r modules/skunicode/include/*  dist/include/ 2>/dev/null || true
+
+          echo "=== .a Files in out/release ==="
+          ls -la out/release/*.a || true
           
           cd out/release
-                ar -M <<EOF
-                CREATE ../../dist/lib/libskia_barracuda.a
-                ADDLIB libskia.a
-                ADDLIB libskparagraph.a
-                ADDLIB libskshaper.a
-                ADDLIB libskunicode.a
-                SAVE
-                END
-                EOF
-                cd ../..
+          cat > merge.mri << 'EOL'
+            CREATE ../../dist/lib/libskia_barracuda.a
+            ADDLIB libskia.a
+            ADDLIB libskparagraph.a
+            ADDLIB libskshaper.a
+            ADDLIB libskunicode.a
+            SAVE
+            END
+            EOL
+          ar -M < merge.mri
+          rm merge.mri
+          cd ../..
           
       shell: bash          
       
@@ -180,5 +186,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
           name: skia-build-${{ runner.os }}-${{ matrix.build_type }}
-          path: skia/dist/ 
+          path: | 
+            skia/dist/ 
+            skia-*-barracuda.*
           retention-days: 30            
