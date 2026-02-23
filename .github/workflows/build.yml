@@ -164,20 +164,25 @@ jobs:
           cp -r modules/skunicode/include/*  dist/include/ 2>/dev/null || true
 
           echo "=== .a Files in out/release ==="
-          ls -la out/release/*.a || true
+          ls -lh out/release/*.a
           
           cd out/release
-          cat > merge.mri << 'EOL'
+          cat > merge.mri << 'EOT'
             CREATE ../../dist/lib/libskia_barracuda.a
-            ADDLIB libskia.a
-            ADDLIB libskparagraph.a
-            ADDLIB libskshaper.a
-            ADDLIB libskunicode.a
+            EOT
+                      for f in *.a; do
+                        echo "ADDLIB $f" >> merge.mri
+                      done
+                      cat >> merge.mri << 'EOT'
             SAVE
             END
-            EOL
+            EOT
+
           ar -M < merge.mri
-          rm merge.mri
+          rm -f merge.mri
+
+          echo "=== libskia_barracuda.a ==="
+          ls -lh ../../dist/lib/libskia_barracuda.a
           cd ../..
           
       shell: bash          
