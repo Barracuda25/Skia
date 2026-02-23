@@ -36,7 +36,9 @@ jobs:
           rm -rf out/release
           bin/gn gen out/release --args='
             is_official_build=true
-            is_component_build=true
+            is_component_build=false
+            is_debug=false
+            skia_enable_optimize_size=true            
             skia_enable_tools=true
             skia_use_system_expat=false
             skia_use_system_icu=false
@@ -77,20 +79,20 @@ jobs:
             skia_compile_modules=true
             skia_enable_fontmgr_custom_embedded=true'
             
-          ninja -C out/release skia skparagraph    
-
+          ninja -C out/release skia skparagraph skshaper skunicode   
+          
           mkdir -p dist/include dist/lib
+      
+          cp -r include/*                     dist/include/ 2>$null || true
+          cp -r modules/skparagraph/include/* dist/include/ 2>$null || true
+          cp -r modules/skshaper/include/*    dist/include/ 2>$null || true
+          cp -r modules/skunicode/include/*   dist/include/ 2>$null || true
           
-          cp -r include/*           dist/include/ 2>/dev/null || true
-          cp -r modules/skparagraph/include/* dist/include/ 2>/dev/null || true
-          cp -r modules/skshaper/include/*   dist/include/ 2>/dev/null || true
-          cp -r modules/skunicode/include/*  dist/include/ 2>/dev/null || true
-          
-          cp out/release/*.dll dist/lib/ 2>/dev/null || true
-          cp out/release/*.lib dist/lib/ 2>/dev/null || true
-          cp out/release/*.so  dist/lib/ 2>/dev/null || true
-          cp out/release/*.a   dist/lib/ 2>/dev/null || true
-          
+          # Eine einzige Library – genau wie du es wolltest
+          cd out/release
+          lib.exe /OUT:../../dist/lib/skia_barracuda.lib *.lib
+          cd ../..
+                    
       shell: bash         
 
     - name: Build Linux
@@ -107,7 +109,9 @@ jobs:
             cc="clang"
             cxx="clang++"
             is_official_build=true
-            is_component_build=true
+            is_component_build=false
+            is_debug=false
+            skia_enable_optimize_size=true
             skia_enable_tools=true
             skia_use_system_expat=false
             skia_use_system_icu=false
@@ -149,7 +153,7 @@ jobs:
             skia_use_safe_libcxx=true
             skia_enable_fontmgr_custom_embedded=true'
           
-          ninja -C out/release skia skparagraph
+          ninja -C out/release skia skparagraph skshaper skunicode
           
           mkdir -p dist/include dist/lib
           
@@ -158,10 +162,17 @@ jobs:
           cp -r modules/skshaper/include/*   dist/include/ 2>/dev/null || true
           cp -r modules/skunicode/include/*  dist/include/ 2>/dev/null || true
           
-          cp out/release/*.dll dist/lib/ 2>/dev/null || true
-          cp out/release/*.lib dist/lib/ 2>/dev/null || true
-          cp out/release/*.so  dist/lib/ 2>/dev/null || true
-          cp out/release/*.a   dist/lib/ 2>/dev/null || true    
+          cd out/release
+                ar -M <<EOF
+                CREATE ../../dist/lib/libskia_barracuda.a
+                ADDLIB libskia.a
+                ADDLIB libskparagraph.a
+                ADDLIB libskshaper.a
+                ADDLIB libskunicode.a
+                SAVE
+                END
+                EOF
+                cd ../..
           
       shell: bash          
       
