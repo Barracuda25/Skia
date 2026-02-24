@@ -64,6 +64,7 @@ jobs:
             skia_use_libjpeg_turbo_encode=true
             
             # Deactivate
+            skia_use_fontconfig=false
             skia_enable_ganesh=false
             skia_enable_graphite=false
             skia_use_gl=false
@@ -136,6 +137,7 @@ jobs:
             skia_use_libjpeg_turbo_encode=true
             
             # Deactivate
+            skia_use_fontconfig=false
             skia_enable_ganesh=false
             skia_enable_graphite=false
             skia_use_gl=false
