@@ -158,32 +158,16 @@ jobs:
           
           mkdir -p dist/include dist/lib
           
-          cp -r include/*           dist/include/ 2>/dev/null || true
+          cp -r include/* dist/include/ 2>/dev/null || true
           cp -r modules/skparagraph/include/* dist/include/ 2>/dev/null || true
-          cp -r modules/skshaper/include/*   dist/include/ 2>/dev/null || true
-          cp -r modules/skunicode/include/*  dist/include/ 2>/dev/null || true
+          cp -r modules/skshaper/include/* dist/include/ 2>/dev/null || true
+          cp -r modules/skunicode/include/* dist/include/ 2>/dev/null || true
 
-          echo "=== .a Files in out/release ==="
-          ls -lh out/release/*.a
-          
-          cd out/release
-          cat > merge.mri << 'EOT'
-            CREATE ../../dist/lib/libskia_barracuda.a
-            EOT
-                      for f in *.a; do
-                        echo "ADDLIB $f" >> merge.mri
-                      done
-                      cat >> merge.mri << 'EOT'
-            SAVE
-            END
-            EOT
+          # rcs: r=ersetzen, c=erstellen, s=index schreiben
+          find out/release -name "*.a" -exec ar rcs dist/lib/libskia_barracuda.a {} +
 
-          ar -M < merge.mri
-          rm -f merge.mri
-
-          echo "=== libskia_barracuda.a ==="
-          ls -lh ../../dist/lib/libskia_barracuda.a
-          cd ../..
+          echo "=== created library ==="
+          ls -lh dist/lib/libskia_barracuda.a
           
       shell: bash          
       
